@@ -33,6 +33,10 @@ Follow the steps below to install the plugin.
 
 == Changelog ==
 
+= Version 0.1.1 (9/20/11) =
+
+* Add support for public `$post_type`'s that support `'post-thumbnails'`.
+
 = Version 0.1 (9/14/11) =
 
 * Initial release.
@@ -41,4 +45,4 @@ Follow the steps below to install the plugin.
 
 = 0.1.1 =
 
-* Something
+* Adds support for public $post_type's that support 'post-thumbnails'.
