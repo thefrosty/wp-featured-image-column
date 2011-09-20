@@ -42,7 +42,6 @@ if ( !class_exists( 'Featured_Image_Column' ) ) {
 			
 			add_action( 'admin_init', 							array( __CLASS__, 'localize' ) );
 			
-			add_action( 'init', 								array( __CLASS__, 'add_image_size' ) );
 			add_action( 'init', 								array( __CLASS__, 'add_theme_support' ) );
 			
 			/* Print style */
@@ -161,6 +160,7 @@ if ( !class_exists( 'Featured_Image_Column' ) ) {
 		function add_image_size() {
 			_deprecated_function( __FUNCTION__, '0.1.1', '' );
 				return;
+			
 			add_image_size( 'featured-column-thumbnail', 32, 32, true ); 
 		}
 		
