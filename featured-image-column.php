@@ -3,7 +3,7 @@
  * Plugin Name: Featured Image Column
  * Plugin URI: http://austinpassy.com/wordpress-plugins/featured-image-column
  * Description: 
- * Version: 0.1.1
+ * Version: 0.1.2
  * Author: Austin Passy
  * Author URI: http://austinpassy.com
  *
@@ -23,11 +23,7 @@ if ( !class_exists( 'Featured_Image_Column' ) ) {
 	class Featured_Image_Column {
 		
 		const domain	= 'featured-image-column';
-		const version	= '0.1.1';
-		
-		function Featured_Image_Column() {
-			$this->__construct();
-		}
+		const version	= '0.1.2';
 		
 		/**
 		 * Sets up the Featured_Image_Column plugin and loads files at the appropriate time.
@@ -38,37 +34,37 @@ if ( !class_exists( 'Featured_Image_Column' ) ) {
 			$post_type = ( !empty( $_GET['post_type'] ) ) ? $_GET['post_type'] : 'post';
 			
 			/* Define constants */
-			add_action( 'plugins_loaded', 						array( __CLASS__, 'constants' ) );
+			add_action( 'plugins_loaded', 	array( __CLASS__, 'constants' ) );
 			
-			add_action( 'admin_init', 							array( __CLASS__, 'localize' ) );
+			add_action( 'admin_init', 		array( __CLASS__, 'localize' ) );
 			
-			add_action( 'init', 								array( __CLASS__, 'add_theme_support' ) );
+			add_action( 'init', 			array( __CLASS__, 'add_theme_support' ) );
 			
 			/* Print style */
-			add_action( 'admin_head', 							array( __CLASS__, 'style' ) );
+			add_action( 'admin_head', 		array( __CLASS__, 'style' ) );
 			
 			/* Column manager */
-			add_filter( 'manage_pages_columns', 				array( __CLASS__, 'columns' ), 10, 2 );
-			add_filter( 'manage_posts_columns', 				array( __CLASS__, 'columns' ), 10, 2 );
-			add_filter( "manage_edit-{$post_type}_columns",		array( __CLASS__, 'columns' ), 10, 2 );
-			add_action( "manage_{$post_type}_posts_custom_column",array( __CLASS__, 'column_data' ), 10, 2 );
+			add_filter( 'manage_pages_columns', 					array( __CLASS__, 'columns' ), 10, 2 );
+			add_filter( 'manage_posts_columns', 					array( __CLASS__, 'columns' ), 10, 2 );
+			add_filter( "manage_edit-{$post_type}_columns",			array( __CLASS__, 'columns' ), 10, 2 );
+			add_action( "manage_{$post_type}_posts_custom_column",	array( __CLASS__, 'column_data' ), 10, 2 );
 			
 			/* Prints pointer javascripts */
-			add_action( 'admin_enqueue_scripts',				array( __CLASS__, 'pointer' ) );
+			add_action( 'admin_enqueue_scripts',					array( __CLASS__, 'pointer' ) );
 		
 			do_action( 'featured_image_column_loaded' );
 		}
 		
 		function constants() {		
 			/* Set constant path to the plugin directory. */
-			define( 'FEATURED_IMAGE_COLUMN_DIR', plugin_dir_path( __FILE__ ) );
-			define( 'FEATURED_IMAGE_COLUMN_ADMIN', trailingslashit( FEATURED_IMAGE_COLUMN_DIR ) . 'admin/' );
+			define( 'FEATURED_IMAGE_COLUMN_DIR',	plugin_dir_path( __FILE__ ) );
+			define( 'FEATURED_IMAGE_COLUMN_ADMIN',	trailingslashit( FEATURED_IMAGE_COLUMN_DIR ) . 'admin/' );
 		
 			/* Set constant path to the plugin URL. */
-			define( 'FEATURED_IMAGE_COLUMN_URL', plugin_dir_url( __FILE__ ) );
-			define( 'FEATURED_IMAGE_COLUMN_IMAGES', FEATURED_IMAGE_COLUMN_URL . 'images/' );
-			define( 'FEATURED_IMAGE_COLUMN_CSS', FEATURED_IMAGE_COLUMN_URL . 'css/' );
-			define( 'FEATURED_IMAGE_COLUMN_JS', FEATURED_IMAGE_COLUMN_URL . 'js/' );
+			define( 'FEATURED_IMAGE_COLUMN_URL',	plugin_dir_url( __FILE__ ) );
+			define( 'FEATURED_IMAGE_COLUMN_IMAGES',	FEATURED_IMAGE_COLUMN_URL . 'images/' );
+			define( 'FEATURED_IMAGE_COLUMN_CSS',	FEATURED_IMAGE_COLUMN_URL . 'css/' );
+			define( 'FEATURED_IMAGE_COLUMN_JS',		FEATURED_IMAGE_COLUMN_URL . 'js/' );
 		}
 		
 		function localize() {
@@ -114,10 +110,21 @@ if ( !class_exists( 'Featured_Image_Column' ) ) {
 			}
 		}
 		
+		/**
+		 * Filter the image in before the 'title'
+		 *
+		 * @todo fix error if no posts exist.
+		 * 			For some reason returning before the 'foreach' 
+		 *			still triggers the 'foreach', which is causing
+		 *			a fatal error when WP_DEBUG is true..
+		 */
 		function columns( $columns, $post_type = 'post' ) {
 			$post_type = get_post_type();
 			
 			if ( !post_type_supports( $post_type, 'thumbnail' ) )
+				return;
+				
+			if ( empty( $columns ) || !$columns )
 				return;
 				
 			$new = array();
@@ -160,7 +167,7 @@ if ( !class_exists( 'Featured_Image_Column' ) ) {
 		function add_image_size() {
 			_deprecated_function( __FUNCTION__, '0.1.1', '' );
 				return;
-			
+				
 			add_image_size( 'featured-column-thumbnail', 32, 32, true ); 
 		}
 		
@@ -203,8 +210,8 @@ if ( !class_exists( 'Featured_Image_Column' ) ) {
 		 * Returns the pointer content
 		 */
 		function pointer_scripts() {
-			$pointer_content  = '<h3>Thanks for installing Featured Image Gallery!</h3>';
-			$pointer_content .= '<p>It looks like you haven&prime;t set your pages to support <code>thumbnail</code>&prime;s <br />';
+			$pointer_content  = __( '<h3>Thanks for installing Featured Image Gallery!</h3>' );
+			$pointer_content .= __( '<p>It looks like you haven\'t set your pages to support <code>thumbnail</code>\'s <br />' );
 			?>
 		<script type="text/javascript"> 
 		//<![CDATA[ 

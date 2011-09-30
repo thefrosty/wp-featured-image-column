@@ -33,6 +33,11 @@ Follow the steps below to install the plugin.
 
 == Changelog ==
 
+= Version 0.1.2 (9/30/11) =
+
+* Removed PHP4 constructor.
+* TODO: Fix error when no posts exists.
+
 = Version 0.1.1 (9/20/11) =
 
 * Add support for public `$post_type`'s that support `'post-thumbnails'`.
@@ -42,6 +47,10 @@ Follow the steps below to install the plugin.
 * Initial release.
 
 == Upgrade Notice ==
+
+= 0.1.2 =
+
+* Code cleanup, attempt at fixing a fatal error when no posts exist (still in progress).
 
 = 0.1.1 =
 
