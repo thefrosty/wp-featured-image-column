@@ -3,7 +3,7 @@
  * Plugin Name: Featured Image Column
  * Plugin URI: http://austinpassy.com/wordpress-plugins/featured-image-column
  * Description: 
- * Version: 0.1.2
+ * Version: 0.1.3
  * Author: Austin Passy
  * Author URI: http://austinpassy.com
  *
@@ -23,7 +23,7 @@ if ( !class_exists( 'Featured_Image_Column' ) ) {
 	class Featured_Image_Column {
 		
 		const domain	= 'featured-image-column';
-		const version	= '0.1.2';
+		const version	= '0.1.3';
 		
 		/**
 		 * Sets up the Featured_Image_Column plugin and loads files at the appropriate time.
@@ -88,7 +88,7 @@ if ( !class_exists( 'Featured_Image_Column' ) ) {
 
 		/**
 		 * Add stylesheet
-		 * @since 0.01
+		 * @since 0.1
 		 */
 		function style() { 
 			global $pagenow;
@@ -171,18 +171,29 @@ if ( !class_exists( 'Featured_Image_Column' ) ) {
 			add_image_size( 'featured-column-thumbnail', 32, 32, true ); 
 		}
 		
+		/**
+		 * Function to get the image
+		 *
+		 * @since	0.1
+		 * @updated	0.1.3 - Added wp_cache_set()
+		 */
 		function get_the_image( $post_id ) {
 			$post_id = ( !empty( $post_id ) ) ? $post_id : get_the_id();			
 
 			$image = '';
+			$image = wp_cache_get( 'featured_column_thumbnail' );				
 			
-			if ( has_post_thumbnail() ) {	
-				$image = wp_get_attachment_image_src( get_post_thumbnail_id( $post_id ), array( 36, 32 ) );
-				$image = esc_url( $image[0] );	
-			} else {				
-				$image = esc_url( plugins_url( 'images/default.png', __FILE__ ) );				
-			}			
-			return apply_filters( 'featured_image_column_default_image', $image );
+			if ( false == $image ) {
+				if ( has_post_thumbnail() ) {	
+					$image = wp_get_attachment_image_src( get_post_thumbnail_id( $post_id ), array( 36, 32 ) );
+					$image = esc_url( $image[0] );	
+				} else {				
+					$image = esc_url( plugins_url( 'images/default.png', __FILE__ ) );				
+				}
+				if ( !is_wp_error( $image ) )
+					wp_cache_set( 'featured_column_thumbnail', $image, null, 60*60*24 );
+			}
+			return apply_filters( 'featured_image_column_default_image', $image ); 
 		}
 		
 		/**
@@ -194,14 +205,13 @@ if ( !class_exists( 'Featured_Image_Column' ) ) {
 		 */
 		function pointer() {
 			
-			if ( self::is_version( '3.3.0' ) || post_type_supports( 'page', 'thumbnail' ) )
+			if ( self::is_version( '3.3.0' ) && post_type_supports( 'page', 'thumbnail' ) )
 				return;
 			
 			$page = get_user_setting( 'featured_image_page_pointer', 0 );
 			if ( !$page ) {
 				wp_enqueue_style( 'wp-pointer' ); 
-				wp_enqueue_script( 'wp-pointer' ); 
-				wp_enqueue_script( 'utils' );
+				wp_enqueue_script( array( 'wp-pointer', 'utils' ) );
 				add_action( 'admin_print_footer_scripts', array( __CLASS__, 'pointer_scripts' ) );
 			}
 		}
@@ -234,8 +244,7 @@ if ( !class_exists( 'Featured_Image_Column' ) ) {
 			}).pointer('open'); 
 		}); 
 		//]]> 
-		</script>
-			<?php
+		</script><?php
 		}
 		
 	}

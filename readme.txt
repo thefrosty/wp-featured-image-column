@@ -1,5 +1,5 @@
 === Featured Image Column ===
-Contributors: austyfrosty, getsource, martythornley
+Contributors: austyfrosty, DH-Shredder, martythornley
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=XQRHECLPQ46TE
 Tags: featured image, admin, column
 Requires at least: 3.0
@@ -32,6 +32,11 @@ Follow the steps below to install the plugin.
 1. Post edit.php screen.
 
 == Changelog ==
+
+= Version 0.1.3 (10/17/11) =
+
+* Added a light caching script for the images.
+* Updated a contributors .org profile name.
 
 = Version 0.1.2 (9/30/11) =
 
