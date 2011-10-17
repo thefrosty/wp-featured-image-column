@@ -10,9 +10,26 @@ Adds a column to the edit screen with the featured image if it exists.
 
 == Description ==
 
-This plugin has no options. It simply adds a column before the title (far left) the show's the posts featured image if it is supported and/or exists.
+This plugin has no options. It simply adds a column before the title (far left) the show's the posts featured image if it's supported and/or exists.
 
-Add a defualt image simply by filtering you own image in. Use `featured_image_column_default_image`.
+Add a defualt image simply by filtering you own image in. Use `featured_image_column_default_image` or filter your own post_type.
+
+**Add support for a custom image**
+`
+function my_custom_featured_image_column_image( $image ) {
+	if ( !has_post_thumbnail() )
+		return trailingslashit( get_stylesheet_directory_uri() ) . 'images/no-featured-image';
+}
+add_filter( 'featured_image_column_default_image', 'my_custom_featured_image_column_image' );
+`
+
+**Add support for a certain `post_type`.**
+`
+function my_custom_featured_image_column_type( $post_types ) {
+	return 'gallery'; //$post_type name
+}
+add_filter( 'featured_image_column_post_types', 'my_custom_featured_image_column_type' );
+`
 
 For question please visit my blog @ [http://austinpassy.com](http://austinpassy.com/wordpress-plugins/featured-image-column/)
 
@@ -32,6 +49,11 @@ Follow the steps below to install the plugin.
 1. Post edit.php screen.
 
 == Changelog ==
+
+= Version 0.1.4 (10/17/11) =
+
+* Added filter for `post_type`'s, thanks to [Bill Erickson](http://wordpress.org/support/topic/plugin-featured-image-column-filter-for-post-types?replies=1)
+* Fixed error when zero posts exists (very rare).
 
 = Version 0.1.3 (10/17/11) =
 

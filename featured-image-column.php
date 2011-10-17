@@ -3,7 +3,7 @@
  * Plugin Name: Featured Image Column
  * Plugin URI: http://austinpassy.com/wordpress-plugins/featured-image-column
  * Description: 
- * Version: 0.1.3
+ * Version: 0.1.4
  * Author: Austin Passy
  * Author URI: http://austinpassy.com
  *
@@ -23,7 +23,7 @@ if ( !class_exists( 'Featured_Image_Column' ) ) {
 	class Featured_Image_Column {
 		
 		const domain	= 'featured-image-column';
-		const version	= '0.1.3';
+		const version	= '0.1.4';
 		
 		/**
 		 * Sets up the Featured_Image_Column plugin and loads files at the appropriate time.
@@ -44,10 +44,12 @@ if ( !class_exists( 'Featured_Image_Column' ) ) {
 			add_action( 'admin_head', 		array( __CLASS__, 'style' ) );
 			
 			/* Column manager */
-			add_filter( 'manage_pages_columns', 					array( __CLASS__, 'columns' ), 10, 2 );
-			add_filter( 'manage_posts_columns', 					array( __CLASS__, 'columns' ), 10, 2 );
-			add_filter( "manage_edit-{$post_type}_columns",			array( __CLASS__, 'columns' ), 10, 2 );
-			add_action( "manage_{$post_type}_posts_custom_column",	array( __CLASS__, 'column_data' ), 10, 2 );
+			if ( self::has_posts( $post_type ) ) {
+				add_filter( 'manage_posts_columns', 					array( __CLASS__, 'columns' ), 10, 2 );
+				add_filter( 'manage_pages_columns', 					array( __CLASS__, 'columns' ), 10, 2 );
+				add_filter( "manage_edit-{$post_type}_columns",			array( __CLASS__, 'columns' ), 10, 2 );
+				add_action( "manage_{$post_type}_posts_custom_column",	array( __CLASS__, 'column_data' ), 10, 2 );
+			}
 			
 			/* Prints pointer javascripts */
 			add_action( 'admin_enqueue_scripts',					array( __CLASS__, 'pointer' ) );
@@ -85,6 +87,27 @@ if ( !class_exists( 'Featured_Image_Column' ) ) {
 			}
 			return true;
 		}
+		
+		/**
+		 * Function to test if has posts to avoid a fatal error
+		 * 
+		 * @since 0.1.4 10/17/2011
+		 */
+		function has_posts( $post_type = null ) {
+			$post_type = ( !empty( $_GET['post_type'] ) ) ? $_GET['post_type'] : 'post';
+			
+			$args = array(
+				'post_type' => $post_type,
+				'post_status' => array( 'publish', 'pending', 'draft', 'future', 'private' )
+			);
+			
+			$the_query = new WP_Query( $args );
+			
+			if ( !$the_query->have_posts() ) {
+				return false;
+			}
+			return true;
+		}
 
 		/**
 		 * Add stylesheet
@@ -116,15 +139,21 @@ if ( !class_exists( 'Featured_Image_Column' ) ) {
 		 * @todo fix error if no posts exist.
 		 * 			For some reason returning before the 'foreach' 
 		 *			still triggers the 'foreach', which is causing
-		 *			a fatal error when WP_DEBUG is true..
+		 *			a fatal error when WP_DEBUG is true OR there are
+		 *			zero posts.
 		 */
 		function columns( $columns, $post_type = 'post' ) {
 			$post_type = get_post_type();
 			
+			/**
 			if ( !post_type_supports( $post_type, 'thumbnail' ) )
 				return;
+				*/
+			
+			if ( !self::included_post_types( $post_type ) )
+				return;
 				
-			if ( empty( $columns ) || !$columns )
+			if ( !isset( $columns ) && ( empty( $columns ) || !$columns ) )
 				return;
 				
 			$new = array();
@@ -137,13 +166,20 @@ if ( !class_exists( 'Featured_Image_Column' ) ) {
 			return $new;
 		}
 		
+		/**
+		 * Output the image
+		 *
+		 */
 		function column_data( $column_name, $post_id ) {
 			
-			$post_id   = ( !empty( $post_id ) ) ? $post_id : get_the_id();
+			$post_id   = ( !empty( $post_id ) ) ? $post_id : get_the_ID();
 			$post_type = get_post_type();
 			
+			if ( !self::included_post_types( $post_type ) )
+				return;
+			
 			if ( post_type_supports( $post_type, 'thumbnail' ) && 'featured-image' == $column_name ) {
-				echo '<img alt="' . get_the_title() . '" src="' . self::get_the_image( $post_id ) . '" />';
+				echo '<img alt="' . esc_attr( get_the_title() ) . '" src="' . esc_url( self::get_the_image( $post_id ) ) . '" />';
 			}
 		}
 		
@@ -194,6 +230,27 @@ if ( !class_exists( 'Featured_Image_Column' ) ) {
 					wp_cache_set( 'featured_column_thumbnail', $image, null, 60*60*24 );
 			}
 			return apply_filters( 'featured_image_column_default_image', $image ); 
+		}
+		
+		/**
+		 * Filterable $post_types
+		 *
+		 * @since	0.1.4 10/17/2011
+		 * @props	Bill Erickson
+		 * @ref		http://wordpress.org/support/topic/plugin-featured-image-column-filter-for-post-types
+		 */
+		function included_post_types( $post_type ) {
+			$post_types = array();
+			
+			if ( post_type_supports( 'post', 'thumbnail' ) ) $post_types[] = 'post';
+			if ( post_type_supports( 'page', 'thumbnail' ) ) $post_types[] = 'page';
+																	  
+			$post_types = apply_filters( 'featured_image_column_post_types', $post_types );
+			
+			if ( !in_array( $post_type, $post_types ) ) {
+				return false;
+			}
+			return true;
 		}
 		
 		/**
