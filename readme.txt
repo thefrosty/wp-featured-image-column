@@ -1,5 +1,5 @@
 === Featured Image Column ===
-Contributors: austyfrosty, DH-Shredder, martythornley
+Contributors: austyfrosty, DH-Shredder, MartyThornley
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=XQRHECLPQ46TE
 Tags: featured image, admin, column
 Requires at least: 3.0
@@ -12,9 +12,10 @@ Adds a column to the edit screen with the featured image if it exists.
 
 This plugin has no options. It simply adds a column before the title (far left) the show's the posts featured image if it's supported and/or exists.
 
-Add a defualt image simply by filtering you own image in. Use `featured_image_column_default_image` or filter your own post_type.
+Add a defualt image simply by filtering you own image in. Use `featured_image_column_default_image` or filter your own post_type by using `featured_image_column_post_types`.
 
-**Add support for a custom image**
+**Add support for a custom default image**
+
 `
 function my_custom_featured_image_column_image( $image ) {
 	if ( !has_post_thumbnail() )
@@ -24,6 +25,7 @@ add_filter( 'featured_image_column_default_image', 'my_custom_featured_image_col
 `
 
 **Add support for a certain `post_type`.**
+
 `
 function my_custom_featured_image_column_type( $post_types ) {
 	return 'gallery'; //$post_type name
