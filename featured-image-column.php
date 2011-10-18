@@ -3,7 +3,7 @@
  * Plugin Name: Featured Image Column
  * Plugin URI: http://austinpassy.com/wordpress-plugins/featured-image-column
  * Description: 
- * Version: 0.1.4
+ * Version: 0.1.5
  * Author: Austin Passy
  * Author URI: http://austinpassy.com
  *
@@ -23,7 +23,7 @@ if ( !class_exists( 'Featured_Image_Column' ) ) {
 	class Featured_Image_Column {
 		
 		const domain	= 'featured-image-column';
-		const version	= '0.1.4';
+		const version	= '0.1.5';
 		
 		/**
 		 * Sets up the Featured_Image_Column plugin and loads files at the appropriate time.
@@ -106,6 +106,7 @@ if ( !class_exists( 'Featured_Image_Column' ) ) {
 			if ( !$the_query->have_posts() ) {
 				return false;
 			}
+			wp_reset_query();
 			return true;
 		}
 
@@ -217,7 +218,10 @@ if ( !class_exists( 'Featured_Image_Column' ) ) {
 			$post_id = ( !empty( $post_id ) ) ? $post_id : get_the_id();			
 
 			$image = '';
-			$image = wp_cache_get( 'featured_column_thumbnail' );				
+			$image = wp_cache_get( 'featured_column_thumbnail', 'post' );
+			
+			if ( !is_array( $image ) )
+				$image = array();
 			
 			if ( false == $image ) {
 				if ( has_post_thumbnail() ) {	
@@ -227,7 +231,7 @@ if ( !class_exists( 'Featured_Image_Column' ) ) {
 					$image = esc_url( plugins_url( 'images/default.png', __FILE__ ) );				
 				}
 				if ( !is_wp_error( $image ) )
-					wp_cache_set( 'featured_column_thumbnail', $image, null, 60*60*24 );
+					wp_cache_set( 'featured_column_thumbnail', $image, 'post', 60*60*24 );
 			}
 			return apply_filters( 'featured_image_column_default_image', $image ); 
 		}

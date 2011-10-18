@@ -50,6 +50,11 @@ Follow the steps below to install the plugin.
 
 == Changelog ==
 
+= Version 0.1.5 (10/18/11) =
+
+* Fixed latest post image showing up across all posts.
+* Reset the query check.
+
 = Version 0.1.4 (10/17/11) =
 
 * Added filter for `post_type`'s, thanks to [Bill Erickson](http://wordpress.org/support/topic/plugin-featured-image-column-filter-for-post-types?replies=1)
