@@ -1,5 +1,5 @@
 === Featured Image Column ===
-Contributors: austyfrosty, DH-Shredder, MartyThornley
+Contributors: austyfrosty, DH-Shredder, MartyThornley,
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=XQRHECLPQ46TE
 Tags: featured image, admin, column
 Requires at least: 3.0
