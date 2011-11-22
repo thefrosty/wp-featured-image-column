@@ -1,5 +1,5 @@
 === Featured Image Column ===
-Contributors: austyfrosty, DH-Shredder, MartyThornley,
+Contributors: austyfrosty, DH-Shredder, MartyThornley, chrisjean,
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=XQRHECLPQ46TE
 Tags: featured image, admin, column
 Requires at least: 3.0
@@ -52,6 +52,10 @@ Follow the steps below to install the plugin.
 
 == Changelog ==
 
+= Version 0.1.6 (11/21/11) =
+
+* Code edits by Chris Jean of ithemes.com.
+
 = Version 0.1.5 (10/18/11) =
 
 * Fixed latest post image showing up across all posts.
@@ -81,6 +85,10 @@ Follow the steps below to install the plugin.
 * Initial release.
 
 == Upgrade Notice ==
+
+= 0.1.6 =
+
+* Cleaned up code thanks to Chris @ iThemes. All errors should be suppressed and clear.
 
 = 0.1.2 =
 

@@ -1,0 +1,11 @@
+th#featured-image,
+td.featured-image.column-featured-image {
+	max-height: 50px;
+	max-width: 50px;
+	width: 50px;
+}
+.featured-image.column-featured-image img {
+	max-height: 32px;
+	max-width: 36px;
+	-ms-interpolation-mode: bicubic;
+}
