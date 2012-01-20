@@ -52,6 +52,10 @@ Follow the steps below to install the plugin.
 
 == Changelog ==
 
+= Version 0.1.7 (1/18/12) =
+
+* Tried to update some code to fix repeated images.
+
 = Version 0.1.6 (11/21/11) =
 
 * Code edits by Chris Jean of ithemes.com.
@@ -85,6 +89,10 @@ Follow the steps below to install the plugin.
 * Initial release.
 
 == Upgrade Notice ==
+
+= 0.1.7 =
+
+* Working on fixed repeating images.
 
 = 0.1.6 =
 
