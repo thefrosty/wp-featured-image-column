@@ -12,26 +12,31 @@ Adds a column to the edit screen with the featured image if it exists.
 
 This plugin has no options. It simply adds a column before the title (far left) the show's the posts featured image if it's supported and/or exists.
 
-Add a defualt image simply by filtering you own image in. Use `featured_image_column_default_image` or filter your own post_type by using `featured_image_column_post_types`.
+Add a defualt image simply by filtering you own image in. Use `featured_image_column_default_image` or filter your own CSS by using `featured_image_column_css`.
 
 **Add support for a custom default image**
 
 `
 function my_custom_featured_image_column_image( $image ) {
 	if ( !has_post_thumbnail() )
-		return trailingslashit( get_stylesheet_directory_uri() ) . 'images/no-featured-image';
+		return trailingslashit( get_stylesheet_directory_uri() ) . 'images/featured-image.png';
 }
 add_filter( 'featured_image_column_default_image', 'my_custom_featured_image_column_image' );
 `
 
-**Add support for a certain `post_type`.**
+**Add your own CSS to change the size of the image.**
 
 `
-function my_custom_featured_image_column_type( $post_types ) {
-	return 'gallery'; //$post_type name
+/**
+ * @use '.featured-image.column-featured-image img {}'
+ */
+function my_custom_featured_image_css() {
+	return trailingslashit( get_stylesheet_directory_uri() ) . 'css/featured-image.css'; //URL to your css
 }
-add_filter( 'featured_image_column_post_types', 'my_custom_featured_image_column_type' );
+add_filter( 'featured_image_column_css', 'my_custom_featured_image_css' );
 `
+
+
 
 For question please visit my blog @ [http://austinpassy.com](http://austinpassy.com/wordpress-plugins/featured-image-column/)
 
@@ -51,6 +56,15 @@ Follow the steps below to install the plugin.
 1. Post edit.php screen.
 
 == Changelog ==
+
+= Version 0.1.9 (3/11/12) =
+
+* Fixed repeat images per posts.
+* Added filter to style sheet, (use your own CSS to make the thumbnail bigger).
+
+= Version 0.1.8 (2/16/12) =
+
+* Updated `wp_cache_set/get`
 
 = Version 0.1.7 (1/18/12) =
 
@@ -89,6 +103,10 @@ Follow the steps below to install the plugin.
 * Initial release.
 
 == Upgrade Notice ==
+
+= 0.1.9 =
+
+* Happy 311 day! Finally fixed duplicate image output. Yay for cache array().
 
 = 0.1.7 =
 

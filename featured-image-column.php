@@ -3,7 +3,7 @@
  * Plugin Name: Featured Image Column
  * Plugin URI: http://austinpassy.com/wordpress-plugins/featured-image-column
  * Description: Adds a column to the edit screen with the featured image if it exists.
- * Version: 0.1.7
+ * Version: 0.1.9
  * Author: Austin Passy
  * Author URI: http://austinpassy.com
  *
@@ -23,7 +23,7 @@ if ( !class_exists( 'Featured_Image_Column' ) ) {
 	class Featured_Image_Column {
 		
 		const domain  = 'featured-image-column';
-		const version = '0.1.7';
+		const version = '0.1.9';
 		
 		/**
 		 * Ensures that the rest of the code only runs on edit.php pages
@@ -70,7 +70,7 @@ if ( !class_exists( 'Featured_Image_Column' ) ) {
 		 * @since 0.1
 		 */
 		function style() {
-			wp_register_style( 'featured-image-column', plugin_dir_url( __FILE__ ) . 'css/column.css', null, self::version );
+			wp_register_style( 'featured-image-column', apply_filters( 'featured_image_column_css', plugin_dir_url( __FILE__ ) . 'css/column.css' ), null, self::version );
 			wp_enqueue_style( 'featured-image-column' );
 		}
 		
@@ -117,28 +117,38 @@ if ( !class_exists( 'Featured_Image_Column' ) ) {
 		 *
 		 * @since	0.1
 		 * @updated	0.1.3 - Added wp_cache_set()
+		 * @updated 0.1.9 - fixed persistent cache per post_id
+		 *		@ref	http://www.ethitter.com/slides/wcmia-caching-scaling-2012-02-18/#slide-11
 		 */
 		function get_the_image( $post_id ) {			
-			$image = wp_cache_get( 'featured_column_thumbnail', 'post' );
+			$post_id	= (int)$post_id;
+			$cache_key	= 'featured_column_thumbnail';
+			$image		= wp_cache_get( $cache_key, null );
 			
-			if ( empty( $image) || !is_string( $image ) ) {
-				$image = '';
+			if ( !is_array( $image ) )
+				$image = array();
+		
+			if ( !array_key_exists( $cache_key, $image ) ) {
+				if ( empty( $image) || !is_string( $image ) ) {
+					$image = '';
+						
+					if ( has_post_thumbnail( $post_id ) ) {
+						$image_array = wp_get_attachment_image_src( get_post_thumbnail_id( $post_id ), array( 36, 32 ) );
+						
+						if ( is_array( $image_array ) && is_string( $image_array[0] ) )
+							$image = $image_array[0];
+					}
 					
-				if ( has_post_thumbnail( $post_id ) ) {
-					$image_array = wp_get_attachment_image_src( get_post_thumbnail_id( $post_id ), array( 36, 32 ) );
+					if ( empty( $image ) ) {
+						$image = plugins_url( 'images/default.png', __FILE__ );
+						$image = apply_filters( 'featured_image_column_default_image', $image );
+					}
 					
-					if ( is_array( $image_array ) && is_string( $image_array[0] ) )
-						$image = $image_array[0];
+					$image = esc_url( $image );
+					$image[$cache_key] = $image;
+					
+					wp_cache_set( $cache_key, $image, null, 60 * 60 * 24 /* 24 hours */ );
 				}
-				
-				if ( empty( $image ) ) {
-					$image = plugins_url( 'images/default.png', __FILE__ );
-					$image = apply_filters( 'featured_image_column_default_image', $image );
-				}
-				
-				$image = esc_url( $image );
-				
-				wp_cache_set( 'featured_column_thumbnail', $image, 'post', 60 * 60 * 24 /* 24 hours */ );
 			}
 			
 			return $image;
