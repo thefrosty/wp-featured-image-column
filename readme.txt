@@ -3,7 +3,7 @@ Contributors: austyfrosty, DH-Shredder, MartyThornley, chrisjean,
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=XQRHECLPQ46TE
 Tags: featured image, admin, column
 Requires at least: 3.0
-Tested up to: 3.3
+Tested up to: 3.4-alpha
 Stable tag: trunk
 
 Adds a column to the edit screen with the featured image if it exists.
