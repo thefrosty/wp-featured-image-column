@@ -3,7 +3,7 @@ Contributors: austyfrosty, DH-Shredder, MartyThornley, chrisjean,
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=XQRHECLPQ46TE
 Tags: featured image, admin, column
 Requires at least: 3.0
-Tested up to: 3.4-alpha
+Tested up to: 3.6
 Stable tag: trunk
 
 Adds a column to the edit screen with the featured image if it exists.
@@ -56,6 +56,10 @@ Follow the steps below to install the plugin.
 1. Post edit.php screen.
 
 == Changelog ==
+
+= Version 0.1.10 (9/5/13) =
+
+* Fixed `PHP Deprecated:  Assigning the return value of new by reference is deprecated in /featured-image-column/featured-image-column.php on line 157`.
 
 = Version 0.1.9 (3/11/12) =
 
