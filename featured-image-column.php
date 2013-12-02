@@ -143,7 +143,10 @@ if ( !class_exists( 'Featured_Image_Column' ) ) {
 			if ( post_type_supports( 'page', 'thumbnail' ) ) $post_types[] = 'page';
 			
 			$post_types = apply_filters( 'featured_image_column_post_types', $post_types );
-			print_r( $post_types );
+			
+			if ( defined( 'WP_LOCAL_DEV' ) && WP_LOCAL_DEV ) {
+				print_r( $post_types );
+			}
 			
 			if ( in_array( $post_type, $post_types ) )
 				return true;
