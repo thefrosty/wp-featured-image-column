@@ -3,7 +3,7 @@ Contributors: austyfrosty, DH-Shredder, MartyThornley, chrisjean,
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=XQRHECLPQ46TE
 Tags: featured image, admin, column
 Requires at least: 3.0
-Tested up to: 3.6
+Tested up to: 3.8
 Stable tag: trunk
 
 Adds a column to the edit screen with the featured image if it exists.
@@ -24,6 +24,19 @@ function my_custom_featured_image_column_image( $image ) {
 add_filter( 'featured_image_column_default_image', 'my_custom_featured_image_column_image' );
 `
 
+**Add/remove support for post types**
+
+`
+function my_custom_featured_image_column_post_type( $post_types ) {
+	foreach( $post_types as $key => $post_type ) {
+		if ( 'post-type' === $post_type ) // Post type you'd like removed. Ex: 'post' or 'page'
+			unset( $post_types[$key] );
+	}
+	return $post_types;
+}
+add_filter( 'featured_image_column_post_types',	'my_custom_featured_image_column_post_type', 13 );
+`
+
 **Add your own CSS to change the size of the image.**
 
 `
@@ -35,8 +48,6 @@ function my_custom_featured_image_css() {
 }
 add_filter( 'featured_image_column_css', 'my_custom_featured_image_css' );
 `
-
-
 
 For question please visit my blog @ [http://austinpassy.com](http://austinpassy.com/wordpress-plugins/featured-image-column/)
 
@@ -56,6 +67,12 @@ Follow the steps below to install the plugin.
 1. Post edit.php screen.
 
 == Changelog ==
+
+= Version 0.2.0 (12/2/13) =
+
+* Updated version to WordPress 3.8 compatable and PHP 5.3+
+* Added new filter `featured_image_column_post_types` for post type support (add/remove).
+* Removed closing PHP.
 
 = Version 0.1.10 (9/5/13) =
 
@@ -107,6 +124,10 @@ Follow the steps below to install the plugin.
 * Initial release.
 
 == Upgrade Notice ==
+
+= 0.2 =
+
+* Happy holidays! If you like the updates please consider donating. PayPal: austin@thefrosty.com. WP 3.8 and PHP 5.3+ compat.
 
 = 0.1.9 =
 
