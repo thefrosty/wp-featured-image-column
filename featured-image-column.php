@@ -3,7 +3,7 @@
  * Plugin Name: Featured Image Column
  * Plugin URI: http://austinpassy.com/wordpress-plugins/featured-image-column
  * Description: Adds a column to the edit screen with the featured image if it exists.
- * Version: 0.2
+ * Version: 0.2.1
  * Author: Austin Passy
  * Author URI: http://austinpassy.com
  *
@@ -23,7 +23,7 @@ if ( !class_exists( 'Featured_Image_Column' ) ) {
 	class Featured_Image_Column {
 		
 		const domain  = 'featured-image-column';
-		const version = '0.2.0';
+		const version = '0.2.1';
 		
 		/**
 		 * Ensures that the rest of the code only runs on edit.php pages
@@ -51,7 +51,7 @@ if ( !class_exists( 'Featured_Image_Column' ) ) {
 		 */
 		function init() {
 			$post_type = get_post_type();
-			
+						
 			if ( !self::included_post_types( $post_type ) )
 				return;
 			
@@ -137,10 +137,13 @@ if ( !class_exists( 'Featured_Image_Column' ) ) {
 		 * @ref		http://wordpress.org/support/topic/plugin-featured-image-column-filter-for-post-types?replies=5
 		 */
 		function included_post_types( $post_type ) {
-			$post_types = array();
 			
-			if ( post_type_supports( 'post', 'thumbnail' ) ) $post_types[] = 'post';
-			if ( post_type_supports( 'page', 'thumbnail' ) ) $post_types[] = 'page';
+			$post_types = array();
+			$get_post_types = get_post_types();
+			
+			foreach ( $get_post_types as $type )
+				if ( post_type_supports( $type, 'thumbnail' ) )
+					$post_types[] = $type;
 			
 			$post_types = apply_filters( 'featured_image_column_post_types', $post_types );
 			
