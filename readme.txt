@@ -68,6 +68,10 @@ Follow the steps below to install the plugin.
 
 == Changelog ==
 
+= Version 0.2.1 (12/3/13) =
+
+* Fixed custom post type support.
+
 = Version 0.2.0 (12/2/13) =
 
 * Updated version to WordPress 3.8 compatable and PHP 5.3+
@@ -125,7 +129,7 @@ Follow the steps below to install the plugin.
 
 == Upgrade Notice ==
 
-= 0.2 =
+= 0.2.1 =
 
 * Happy holidays! If you like the updates please consider donating. PayPal: austin@thefrosty.com. WP 3.8 and PHP 5.3+ compat.
 
