@@ -3,10 +3,10 @@ Contributors: austyfrosty, DH-Shredder, MartyThornley, chrisjean,
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=XQRHECLPQ46TE
 Tags: featured image, admin, column
 Requires at least: 3.0
-Tested up to: 3.8
+Tested up to: 4.1
 Stable tag: trunk
 
-Adds a column to the edit screen with the featured image if it exists.
+Adds a column to any post type edit screen with the featured image if it exists.
 
 == Description ==
 
@@ -24,17 +24,21 @@ function my_custom_featured_image_column_image( $image ) {
 add_filter( 'featured_image_column_default_image', 'my_custom_featured_image_column_image' );
 `
 
-**Add/remove support for post types**
+** Remove support for post types ** Use the `featured_image_column_init` action hook for your filter.
 
 `
-function my_custom_featured_image_column_post_type( $post_types ) {
+function frosty_featured_image_column_init_func() {
+	add_filter( 'featured_image_column_post_types', 'frosty_featured_image_column_remove_post_types', 11 ); // Remove
+}
+add_action( 'featured_image_column_init', 'frosty_featured_image_column_init_func' );
+
+function frosty_featured_image_column_remove_post_types( $post_types ) {
 	foreach( $post_types as $key => $post_type ) {
 		if ( 'post-type' === $post_type ) // Post type you'd like removed. Ex: 'post' or 'page'
 			unset( $post_types[$key] );
 	}
 	return $post_types;
 }
-add_filter( 'featured_image_column_post_types',	'my_custom_featured_image_column_post_type', 13 );
 `
 
 **Add your own CSS to change the size of the image.**
@@ -49,7 +53,7 @@ function my_custom_featured_image_css() {
 add_filter( 'featured_image_column_css', 'my_custom_featured_image_css' );
 `
 
-For question please visit my blog @ [http://austinpassy.com](http://austinpassy.com/wordpress-plugins/featured-image-column/)
+For question please visit my blog @ [http://austin.passy.co](http://austin.passy.co/wordpress-plugins/featured-image-column/)
 
 == Installation ==
 
@@ -67,6 +71,13 @@ Follow the steps below to install the plugin.
 1. Post edit.php screen.
 
 == Changelog ==
+
+= Version 0.2.2 (12/3/14) =
+
+* Wow. Exactly one year to the dau since the last update!
+* Added settings to turn on/off featured image column per post type.
+* Added pre load hook `featured_image_column_init`.
+* Better custom post type column manager filter.
 
 = Version 0.2.1 (12/3/13) =
 
@@ -128,6 +139,10 @@ Follow the steps below to install the plugin.
 * Initial release.
 
 == Upgrade Notice ==
+
+= 0.2.2 =
+
+* Happy holidays! If you like the updates please consider donating. PayPal: austin@thefrosty.com. WP 4.1 and post type settings.
 
 = 0.2.1 =
 
