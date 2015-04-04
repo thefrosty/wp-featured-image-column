@@ -71,6 +71,10 @@ Follow the steps below to install the plugin.
 
 == Changelog ==
 
+= Version 0.2.3 (04/4/15) =
+
+* Make sure get_the_image() returns the cached image. /ht Djules
+
 = Version 0.2.2 (12/3/14) =
 
 * Wow. Exactly one year to the dau since the last update!

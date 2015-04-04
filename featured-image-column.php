@@ -1,9 +1,9 @@
 <?php
 /**
  * Plugin Name: Featured Image Column
- * Plugin URI: http://austinpassy.com/wordpress-plugins/featured-image-column
+ * Plugin URI: http://austin.passy.co/wordpress-plugins/featured-image-column
  * Description: Adds a column to the edit screen with the featured image if it exists.
- * Version: 0.2.2
+ * Version: 0.2.3
  * Author: Austin Passy
  * Author URI: http://austin.passy.co
  *
@@ -24,7 +24,7 @@ if ( !class_exists( 'Featured_Image_Column' ) ) {
 	class Featured_Image_Column {
 		
 		const domain  = 'featured-image-column';
-		const version = '0.2.2';
+		const version = '0.2.3';
 		
 		/**
 		 * Ensures that the rest of the code only runs on edit.php pages
@@ -133,7 +133,7 @@ if ( !class_exists( 'Featured_Image_Column' ) ) {
 		 * @since 	0.1.6
 		 */
 		function load() {			
-			add_action( 'wp',											array( $this, 'init' ) );
+			add_action( 'wp',										array( $this, 'init' ) );
 		}
 		
 		/**
@@ -160,7 +160,7 @@ if ( !class_exists( 'Featured_Image_Column' ) ) {
 			add_action( 'admin_enqueue_scripts',						array( $this, 'style' ), 0 );
 			
 			/* Column manager */
-			add_filter( "manage_edit-{$post_type}_columns",		array( $this, 'columns' ) );
+			add_filter( "manage_edit-{$post_type}_columns",			array( $this, 'columns' ) );
 		//	add_filter( "manage_{$post_type}_posts_columns",		array( $this, 'columns' ) );
 			add_action( "manage_{$post_type}_posts_custom_column",	array( $this, 'column_data' ), 10, 2 );
 			
@@ -304,8 +304,9 @@ if ( !class_exists( 'Featured_Image_Column' ) ) {
 					wp_cache_set( $cache_key, $cache, null, 60 * 60 * 24 /* 24 hours */ );
 				}
 			}
-
-			return $output;
+			
+			// Make sure we're returning the cached image HT: https://wordpress.org/support/topic/do-not-display-image-from-cache?replies=1#post-6773703
+			return isset( $cache[$cache_key] ) ? $cache[$cache_key] : $output;
 		}
 		
 		/**
