@@ -35,12 +35,25 @@ class Featured_Image_Column {
     /**
      * Ensures that the rest of the code only runs on edit.php pages
      *
-     * @since 0.1
+     * @since 0.3
      */
     public function add_hooks() {
         add_action( 'admin_menu', [ $this, 'admin_menu' ] );
         add_action( 'admin_init', [ $this, 'admin_init' ] );
         add_action( 'admin_enqueue_scripts', [ $this, 'style' ] );
+    }
+
+    /**
+     * Activation hook, to add our default settings.
+     */
+    public function activation_hook() {
+        $post_types = [];
+        foreach ( $this->get_post_types() as $key => $post_type ) {
+            if ( post_type_supports( $post_type, 'thumbnail' ) ) {
+                $post_types[ $post_type ] = $post_type;
+            }
+        }
+        update_option( 'featured_image_column', $post_types );
     }
 
     /**
@@ -81,8 +94,6 @@ class Featured_Image_Column {
         if ( empty( ( $post_types = get_option( 'featured_image_column', [] ) ) ) ) {
             return;
         }
-
-        add_filter( 'featured_image_column_post_types', [ $this, 'add_setting_post_types' ] );
 
         // Add out custom column and column data
         foreach ( $post_types as $post_type ) {
@@ -133,36 +144,23 @@ class Featured_Image_Column {
     }
 
     /**
-     * Filter our settings into our $post_type array and add our new Post Types.
-     *
-     * @since 0.2.2
-     *
-     * @param array $post_types
-     *
-     * @return array
-     */
-    public function add_setting_post_types( array $post_types ) {
-        return array_merge( $post_types, array_keys( $this->get_settings() ) );
-    }
-
-    /**
-     * Enqueue our stylesheet.
+     * Enqueue our stylesheet on the edit.php page.
      *
      * @since 0.1
      *
      * @param string $hook
      */
     public function style( $hook ) {
-        if ( $hook != 'edit.php' ) {
-            return;
-        }
         wp_register_style(
             'featured-image-column',
             apply_filters( 'featured_image_column_css', plugin_dir_url( __FILE__ ) . 'css/column.css' ),
             [],
             self::VERSION
         );
-        wp_enqueue_style( 'featured-image-column' );
+
+        if ( $hook === 'edit.php' ) {
+            wp_enqueue_style( 'featured-image-column' );
+        }
     }
 
     /**
@@ -248,6 +246,8 @@ class Featured_Image_Column {
     }
 
     /**
+     * Get our settings from the DB with the defaults set to an array.
+     *
      * @return array
      */
     protected function get_settings() {
@@ -266,4 +266,5 @@ class Featured_Image_Column {
     }
 }
 
-( new Featured_Image_Column() )->add_hooks();
+( $featured_image_column = new Featured_Image_Column() )->add_hooks();
+register_activation_hook( __FILE__, [ $featured_image_column, 'activation_hook' ] );
