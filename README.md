@@ -80,6 +80,10 @@ Follow the steps below to install the plugin.
 
 ## Changelog 
 
+### Version 0.3.2 (06/26/17) =
+
+* Missed short-array syntax updates for PHP < 5.4 compatibility.
+
 ### Version 0.3.1 (06/26/17) 
 
 * Fix for PHP versions < 5.4.
@@ -166,33 +170,4 @@ Follow the steps below to install the plugin.
 ## Upgrade Notice 
 
 ### 0.3 
-
-* Code cleanup, compatibility updates for WordPress 4.8, quick edit no longer collapses the columns and the settings actually toggle post_types on/off!
-
-### 0.2.2 
-
-* Happy holidays! If you like the updates please consider donating. PayPal: austin@thefrosty.com. WP 4.1 and post type settings.
-
-### 0.2.1 
-
-* Happy holidays! If you like the updates please consider donating. PayPal: austin@thefrosty.com. WP 3.8 and PHP 5.3+ compat.
-
-### 0.1.9 
-
-* Happy 311 day! Finally fixed duplicate image output. Yay for cache array().
-
-### 0.1.7 
-
-* Working on fixed repeating images.
-
-### 0.1.6 
-
-* Cleaned up code thanks to Chris @ iThemes. All errors should be suppressed and clear.
-
-### 0.1.2 
-
-* Code cleanup, attempt at fixing a fatal error when no posts exist (still in progress).
-
-### 0.1.1 
-
-* Adds support for public $post_type's that support 'post-thumbnails'.
+Code cleanup, compatibility updates for WordPress 4.8, quick edit no longer collapses the columns and the settings actually toggle post_types on/off!

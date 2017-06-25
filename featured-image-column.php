@@ -4,7 +4,7 @@
  * Plugin Name: Featured Image Column
  * Plugin URI: http://austin.passy.co/wordpress-plugins/featured-image-column
  * Description: Adds a column to the edit screen with the featured image if it exists.
- * Version: 0.3.1
+ * Version: 0.3.2
  * Author: Austin Passy
  * Author URI: http://austin.passy.co
  *
@@ -30,7 +30,6 @@ namespace TheFrosty;
 class Featured_Image_Column {
 
     const ID = 'featured-image';
-    const VERSION = '0.3.1';
 
     /**
      * Ensures that the rest of the code only runs on edit.php pages
@@ -38,16 +37,16 @@ class Featured_Image_Column {
      * @since 0.3
      */
     public function add_hooks() {
-        add_action( 'admin_menu', [ $this, 'admin_menu' ] );
-        add_action( 'admin_init', [ $this, 'admin_init' ] );
-        add_action( 'admin_enqueue_scripts', [ $this, 'style' ] );
+        add_action( 'admin_menu', array( $this, 'admin_menu' ) );
+        add_action( 'admin_init', array( $this, 'admin_init' ) );
+        add_action( 'admin_enqueue_scripts', array( $this, 'style' ) );
     }
 
     /**
      * Activation hook, to add our default settings.
      */
     public function activation_hook() {
-        $post_types = [];
+        $post_types = array();
         foreach ( $this->get_post_types() as $key => $post_type ) {
             if ( post_type_supports( $post_type, 'thumbnail' ) ) {
                 $post_types[ $post_type ] = $post_type;
@@ -67,7 +66,7 @@ class Featured_Image_Column {
             'Featured Image Col',
             'manage_options',
             'featured-image-column',
-            [ $this, 'settings_page' ]
+            array( $this, 'settings_page' )
         );
     }
 
@@ -91,7 +90,8 @@ class Featured_Image_Column {
         }
 
         // Make sure we've got some post_types saved via our settings.
-        if ( empty( ( $post_types = get_option( 'featured_image_column', [] ) ) ) ) {
+        $post_types = get_option( 'featured_image_column', array() );
+        if ( empty( $post_types ) ) {
             return;
         }
 
@@ -100,9 +100,9 @@ class Featured_Image_Column {
             if ( ! post_type_supports( $post_type, 'thumbnail' ) ) {
                 continue;
             }
-            add_filter( "manage_{$post_type}_posts_columns", [ $this, 'columns' ] );
+            add_filter( "manage_{$post_type}_posts_columns", array( $this, 'columns' ) );
             add_action( "manage_{$post_type}_posts_custom_column",
-                [ $this, 'column_data' ], 10, 2 );
+                array( $this, 'column_data' ), 10, 2 );
         }
     }
 
@@ -114,7 +114,7 @@ class Featured_Image_Column {
     public function settings_page() {
         $post_types = get_option( 'featured_image_column', false );
         if ( $post_types === false ) {
-            $post_types = [];
+            $post_types = array();
             foreach ( $this->get_post_types() as $key => $post_type ) {
                 if ( post_type_supports( $post_type, 'thumbnail' ) ) {
                     $post_types[ $post_type ] = $post_type;
@@ -154,8 +154,8 @@ class Featured_Image_Column {
         wp_register_style(
             'featured-image-column',
             apply_filters( 'featured_image_column_css', plugin_dir_url( __FILE__ ) . 'css/column.css' ),
-            [],
-            self::VERSION
+            array(),
+            '20170625'
         );
 
         if ( $hook === 'edit.php' ) {
@@ -172,10 +172,10 @@ class Featured_Image_Column {
      */
     public function columns( array $columns ) {
         if ( ! is_array( $columns ) ) {
-            $columns = [];
+            $columns = array();
         }
 
-        $new_columns = [];
+        $new_columns = array();
         foreach ( $columns as $key => $title ) {
             // Put the Thumbnail column before the Title column
             if ( $key == 'title' ) {
@@ -217,7 +217,7 @@ class Featured_Image_Column {
         register_setting(
             'featured_image_column_post_types',
             'featured_image_column',
-            [ $this, 'sanitize_callback' ]
+            array( $this, 'sanitize_callback' )
         );
     }
 
@@ -251,7 +251,7 @@ class Featured_Image_Column {
      * @return array
      */
     protected function get_settings() {
-        return get_option( 'featured_image_column', [] );
+        return get_option( 'featured_image_column', array() );
     }
 
     /**
@@ -262,10 +262,10 @@ class Featured_Image_Column {
      * @return array
      */
     protected function get_post_types() {
-        return get_post_types( [ 'public' => true ] );
+        return get_post_types( array( 'public' => true ) );
     }
 }
 
 $featured_image_column = new Featured_Image_Column();
 $featured_image_column->add_hooks();
-register_activation_hook( __FILE__, [ $featured_image_column, 'activation_hook' ] );
+register_activation_hook( __FILE__, array( $featured_image_column, 'activation_hook' ) );
