@@ -29,7 +29,6 @@ namespace TheFrosty;
  */
 class Featured_Image_Column {
 
-    const DOMAIN = 'featured-image-column';
     const ID = 'featured-image';
     const VERSION = '0.3';
 
@@ -39,19 +38,9 @@ class Featured_Image_Column {
      * @since 0.1
      */
     public function add_hooks() {
-        add_action( 'load-edit.php', [ $this, 'load' ] );
         add_action( 'admin_menu', [ $this, 'admin_menu' ] );
-        add_action( 'admin_init', [ $this, 'register_setting' ] );
-    }
-
-    /**
-     * Since the load-edit.php hook is too early for checking the post type, hook the rest
-     * of the code to the wp action to allow the query to be run first
-     *
-     * @since 0.1.6
-     */
-    public function load() {
-        add_action( 'wp', [ $this, 'init' ] );
+        add_action( 'admin_init', [ $this, 'admin_init' ] );
+        add_action( 'admin_enqueue_scripts', [ $this, 'style' ] );
     }
 
     /**
@@ -64,9 +53,46 @@ class Featured_Image_Column {
             'Featured Image Column Settings',
             'Featured Image Col',
             'manage_options',
-            self::DOMAIN,
+            'featured-image-column',
             [ $this, 'settings_page' ]
         );
+    }
+
+    /**
+     * Since the load-edit.php hook is too early for checking the post type, hook the rest
+     * of the code to the wp action to allow the query to be run first
+     *
+     * @since 0.1.6
+     * @update 0.3
+     */
+    public function admin_init() {
+        global $pagenow;
+
+        $this->register_settings();
+
+        // Only continue if we're on the 'edit.php' page(s)
+        if ( ( empty( $pagenow ) || $pagenow !== 'edit.php' ) &&
+             ( defined( 'DOING_AJAX' ) && ! DOING_AJAX )
+        ) {
+            return;
+        }
+
+        // Make sure we've got some post_types saved via our settings.
+        if ( empty( ( $post_types = get_option( 'featured_image_column', [] ) ) ) ) {
+            return;
+        }
+
+        add_filter( 'featured_image_column_post_types', [ $this, 'add_setting_post_types' ] );
+
+        // Add out custom column and column data
+        foreach ( $post_types as $post_type ) {
+            if ( ! post_type_supports( $post_type, 'thumbnail' ) ) {
+                continue;
+            }
+            add_filter( "manage_{$post_type}_posts_columns", [ $this, 'columns' ] );
+            add_action( "manage_{$post_type}_posts_custom_column",
+                [ $this, 'column_data' ], 10, 2 );
+        }
     }
 
     /**
@@ -75,11 +101,12 @@ class Featured_Image_Column {
      * @since 0.2.2
      */
     public function settings_page() {
-        if ( false === ( $post_types = get_option( 'featured_image_column', false ) ) ) {
+        $post_types = get_option( 'featured_image_column', false );
+        if ( $post_types === false ) {
             $post_types = [];
-            foreach ( $this->get_post_types() as $key => $label ) {
-                if ( post_type_supports( $label, 'thumbnail' ) ) {
-                    $post_types[ $label ] = $label;
+            foreach ( $this->get_post_types() as $key => $post_type ) {
+                if ( post_type_supports( $post_type, 'thumbnail' ) ) {
+                    $post_types[ $post_type ] = $post_type;
                 }
             }
             update_option( 'featured_image_column', $post_types );
@@ -89,62 +116,20 @@ class Featured_Image_Column {
     }
 
     /**
-     * Register our setting.
-     *
-     * @since 0.2.2
-     */
-    public function register_setting() {
-        register_setting(
-            'featured_image_column_post_types',
-            'featured_image_column',
-            [ $this, 'sanitize_callback' ]
-        );
-    }
-
-    /**
      * Sanitize our setting.
      *
      * @since 0.2.2
      *
-     * @param array $input
+     * @param mixed $input
      *
      * @return array
      */
     public function sanitize_callback( $input ) {
-        $input = array_map( 'sanitize_key', $input );
-
-        return $input;
-    }
-
-    /**
-     * Sets up the Featured_Image_Column plugin and loads files at the appropriate time.
-     *
-     * @since 0.1.6
-     */
-    public function init() {
-        do_action( 'featured_image_column_init' );
-
-        /**
-         * Sample filter to remove post type
-         * add_filter( 'featured_image_column_post_types', array( $this, 'remove_post_type' ), 99 );
-         */
-        add_filter( 'featured_image_column_post_types', [ $this, 'add_setting_post_types' ] );
-
-        $post_type = get_post_type();
-
-        /* Bail early if $post_type isn't supported */
-        if ( ! $this->included_post_types( $post_type ) ) {
-            return;
+        if ( is_array( $input ) ) {
+            return array_map( 'sanitize_key', $input );
         }
 
-        /* Print style */
-        add_action( 'admin_enqueue_scripts', [ $this, 'style' ], 0 );
-
-        /* Column manager */
-        add_filter( "manage_edit-{$post_type}_columns", [ $this, 'columns' ] );
-        add_action( "manage_{$post_type}_posts_custom_column", [ $this, 'column_data' ], 10, 2 );
-
-        do_action( 'featured_image_column_loaded' );
+        return sanitize_key( $input );
     }
 
     /**
@@ -156,23 +141,25 @@ class Featured_Image_Column {
      *
      * @return array
      */
-    public function add_setting_post_types( $post_types ) {
-        $setting_post_types = get_option( 'featured_image_column', [] );
-        $post_types         = array_merge( $post_types, array_keys( $setting_post_types ) );
-
-        return $post_types;
+    public function add_setting_post_types( array $post_types ) {
+        return array_merge( $post_types, array_keys( $this->get_settings() ) );
     }
 
     /**
      * Enqueue our stylesheet.
      *
      * @since 0.1
+     *
+     * @param string $hook
      */
-    public function style() {
+    public function style( $hook ) {
+        if ( $hook != 'edit.php' ) {
+            return;
+        }
         wp_register_style(
             'featured-image-column',
             apply_filters( 'featured_image_column_css', plugin_dir_url( __FILE__ ) . 'css/column.css' ),
-            null,
+            [],
             self::VERSION
         );
         wp_enqueue_style( 'featured-image-column' );
@@ -185,7 +172,7 @@ class Featured_Image_Column {
      *
      * @return array
      */
-    public function columns( $columns ) {
+    public function columns( array $columns ) {
         if ( ! is_array( $columns ) ) {
             $columns = [];
         }
@@ -194,7 +181,7 @@ class Featured_Image_Column {
         foreach ( $columns as $key => $title ) {
             // Put the Thumbnail column before the Title column
             if ( $key == 'title' ) {
-                $new_columns[ self::ID ] = __( 'Image', self::DOMAIN );
+                $new_columns[ self::ID ] = esc_html__( 'Image', 'featured-image-column' );
             }
 
             $new_columns[ $key ] = $title;
@@ -214,15 +201,26 @@ class Featured_Image_Column {
             return;
         }
 
-        $image_src = $this->get_the_image( $post_id );
+        $featured_image = $this->get_the_image( $post_id );
 
-        if ( empty( $image_src ) ) {
-            echo "&nbsp;"; // This helps prevent issues with empty cells
+        if ( ! empty( $featured_image ) ) {
+            echo $featured_image;
 
             return;
         }
 
-        echo '<img alt="' . esc_attr( get_the_title() ) . '" src="' . esc_url( $image_src ) . '">';
+        echo "&nbsp;"; // This helps prevent issues with empty cells
+    }
+
+    /**
+     * Register the plugins settings.
+     */
+    protected function register_settings() {
+        register_setting(
+            'featured_image_column_post_types',
+            'featured_image_column',
+            [ $this, 'sanitize_callback' ]
+        );
     }
 
     /**
@@ -231,78 +229,29 @@ class Featured_Image_Column {
      * @since 0.1
      * @updated 0.1.3 - Added wp_cache_set()
      * @updated 0.1.9 - fixed persistent cache per post_id
-     * @link http://www.ethitter.com/slides/wcmia-caching-scaling-2012-02-18/#slide-11
+     * @updated 0.3 - Removed wp_cache_*
      *
      * @param int $post_id
      *
      * @return string
      */
-    public function get_the_image( $post_id ) {
-        $cache_key = "featured_image_post_id-{$post_id}-_thumbnail";
-        $cache     = wp_cache_get( $cache_key, null );
+    protected function get_the_image( $post_id ) {
+        if ( has_post_thumbnail( $post_id ) ) {
+            return get_the_post_thumbnail( $post_id );
+        } else {
+            $default = plugins_url( 'images/default.png', __FILE__ );
+            $image   = apply_filters( 'featured_image_column_default_image', $default );
 
-        if ( ! is_array( $cache ) ) {
-            $cache = [];
+            return '<img alt="' . esc_attr( get_the_title( $post_id ) ) . '"
+                src="' . esc_url( $image ) . '">';
         }
-
-        if ( ! array_key_exists( $cache_key, $cache ) ) {
-            if ( empty( $cache ) || ! is_string( $cache ) ) {
-                $output = '';
-
-                if ( has_post_thumbnail( $post_id ) ) {
-                    $image_array = wp_get_attachment_image_src(
-                        get_post_thumbnail_id( $post_id ),
-                        [ 36, 32, ]
-                    );
-
-                    if ( is_array( $image_array ) && is_string( $image_array[0] ) ) {
-                        $output = $image_array[0];
-                    }
-                }
-
-                if ( empty( $output ) ) {
-                    $output = plugins_url( 'images/default.png', __FILE__ );
-                    $output = apply_filters( 'featured_image_column_default_image', $output );
-                }
-
-                $output              = esc_url( $output );
-                $cache[ $cache_key ] = $output;
-
-                wp_cache_set( $cache_key, $cache, null, DAY_IN_SECONDS );
-
-                return $cache[ $cache_key ];
-            }
-        }
-
-        /**
-         * Make sure we're returning the cached image
-         * HT: https://wordpress.org/support/topic/do-not-display-image-from-cache?replies=1#post-6773703
-         */
-        return isset( $cache[ $cache_key ] ) ? $cache[ $cache_key ] :
-            isset( $output ) ? $output : '';
     }
 
     /**
-     * Allowed post types
-     *
-     * @since 0.2
-     * @link http://wordpress.org/support/topic/plugin-featured-image-column-filter-for-post-types?replies=5
-     *
-     * @param string $post_type
-     *
-     * @return bool
+     * @return array
      */
-    private function included_post_types( $post_type ) {
-        $post_types = [];
-        foreach ( $this->get_post_types() as $type ) {
-            if ( post_type_supports( $type, 'thumbnail' ) ) {
-                $post_types[] = $type;
-            }
-        }
-
-        $post_types = apply_filters( 'featured_image_column_post_types', $post_types );
-
-        return in_array( $post_type, $post_types );
+    protected function get_settings() {
+        return get_option( 'featured_image_column', [] );
     }
 
     /**
@@ -312,29 +261,8 @@ class Featured_Image_Column {
      *
      * @return array
      */
-    private function get_post_types() {
+    protected function get_post_types() {
         return get_post_types( [ 'public' => true ] );
-    }
-
-    /**
-     * Helper function to test post_type against its support
-     *
-     * @since 0.2.2
-     *
-     * @param string $supports
-     *
-     * @return array
-     */
-    private function post_type_supports( $supports = 'thumbnail' ) {
-        $post_types = [];
-
-        foreach ( $this->get_post_types() as $key => $label ) {
-            if ( post_type_supports( $label, $supports ) ) {
-                $post_types[] = $label;
-            }
-        }
-
-        return $post_types;
     }
 }
 

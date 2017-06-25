@@ -2,7 +2,7 @@
 Contributors: austyfrosty, DH-Shredder, MartyThornley, chrisjean,
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=XQRHECLPQ46TE
 Tags: featured image, admin, column
-Requires at least: 3.0
+Requires at least: 4.4
 Tested up to: 4.8
 Stable tag: trunk
 
@@ -75,7 +75,10 @@ Follow the steps below to install the plugin.
 = Version 0.3 (06/25/17) =
 
 * Code cleanup.
-* Tested with WordPress 4.8.
+* Tested with WordPress 4.8 new minimum version requirement set to 4.4.
+* Image columns work correctly when using Quick Edit now (no more collapsing)!
+* Removed use of additional wp_cache.s
+* Toggling setting controls for post types works again (turn on/off featured image column per post type).
 
 = Version 0.2.3 (04/4/15) =
 
@@ -151,7 +154,7 @@ Follow the steps below to install the plugin.
 
 = 0.3 =
 
-* Code cleanup and support for WordPress 4.8.
+* Code cleanup, compatibility updates for WordPress 4.8, quick edit no longer collapses the columns and the settings actually toggle post_types on/off!
 
 = 0.2.2 =
 
