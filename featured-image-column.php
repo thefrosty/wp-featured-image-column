@@ -4,7 +4,7 @@
  * Plugin Name: Featured Image Column
  * Plugin URI: http://austin.passy.co/wordpress-plugins/featured-image-column
  * Description: Adds a column to the edit screen with the featured image if it exists.
- * Version: 0.3
+ * Version: 0.3.1
  * Author: Austin Passy
  * Author URI: http://austin.passy.co
  *
@@ -30,7 +30,7 @@ namespace TheFrosty;
 class Featured_Image_Column {
 
     const ID = 'featured-image';
-    const VERSION = '0.3';
+    const VERSION = '0.3.1';
 
     /**
      * Ensures that the rest of the code only runs on edit.php pages
@@ -266,5 +266,6 @@ class Featured_Image_Column {
     }
 }
 
-( $featured_image_column = new Featured_Image_Column() )->add_hooks();
+$featured_image_column = new Featured_Image_Column();
+$featured_image_column->add_hooks();
 register_activation_hook( __FILE__, [ $featured_image_column, 'activation_hook' ] );

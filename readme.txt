@@ -72,6 +72,11 @@ Follow the steps below to install the plugin.
 
 == Changelog ==
 
+= Version 0.3.1 (06/26/17) =
+
+* Fix for PHP versions < 5.4.
+* Please update your PHP versions!
+
 = Version 0.3 (06/25/17) =
 
 * Code cleanup.
