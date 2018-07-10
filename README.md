@@ -171,3 +171,7 @@ Follow the steps below to install the plugin.
 
 ### 0.3 
 Code cleanup, compatibility updates for WordPress 4.8, quick edit no longer collapses the columns and the settings actually toggle post_types on/off!
+## Support on Beerpay
+Hey dude! Help me out for a couple of :beers:!
+
+[![Beerpay](https://beerpay.io/thefrosty/wp-featured-image-column/badge.svg?style=beer-square)](https://beerpay.io/thefrosty/wp-featured-image-column)  [![Beerpay](https://beerpay.io/thefrosty/wp-featured-image-column/make-wish.svg?style=flat-square)](https://beerpay.io/thefrosty/wp-featured-image-column?focus=wish)
