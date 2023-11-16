@@ -2,9 +2,10 @@
 Contributors: austyfrosty, DH-Shredder, MartyThornley, chrisjean,
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=XQRHECLPQ46TE
 Tags: featured image, admin, column
-Requires at least: 4.4
-Tested up to: 4.8
+Requires at least: 6.2
+Tested up to: 6.4
 Stable tag: trunk
+Requires PHP: 8.0
 
 Adds a column to any post type edit screen with the featured image if it exists.
 
@@ -46,18 +47,7 @@ function frosty_featured_image_column_remove_post_types( $post_types ) {
 }
 `
 
-**Add your own CSS to change the size of the image.**
-`
-/**
- * @use '.featured-image.column-featured-image img {}'
- */
-function my_custom_featured_image_css() {
-	return trailingslashit( get_stylesheet_directory_uri() ) . 'css/featured-image.css'; //URL to your css
-}
-add_filter( 'featured_image_column_css', 'my_custom_featured_image_css' );
-`
-
-For more question please visit [http://austin.passy.co](http://austin.passy.co/wordpress-plugins/featured-image-column/)
+For more question please visit [https://austin.passy.co](https://austin.passy.co/wordpress-plugins/featured-image-column/)
 
 == Installation ==
 
@@ -71,6 +61,11 @@ Follow the steps below to install the plugin.
 1. Post edit.php screen.
 
 == Changelog ==
+
+= Version 1.0.0 (2023/11/16) =
+
+* Update code for PHP >= 8.0.
+* Update for WordPress >= 6.2.
 
 = Version 0.3.2 (06/26/17) =
 
