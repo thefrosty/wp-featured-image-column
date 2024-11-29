@@ -10,7 +10,7 @@
 Adds a column to public post types edit screen where the featured image of each post will be shown (if available).
  
 <p align="center">
-<a href="https://wordpress.org/plugins/featured-image-column/"><img src="https://raw.githubusercontent.com/thefrosty/wp-featured-image-column/master/wp-assets/banner-1544x500.png" width="1544"></a>
+<a href="https://wordpress.org/plugins/featured-image-column/"><img src="./.wordpress-org/banner-1544x500.png" width="1544"></a>
 </p>
 
 ## Description 
