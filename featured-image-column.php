@@ -4,11 +4,11 @@
  * Plugin Name: Featured Image Column
  * Plugin URI: https://austin.passy.co/wordpress-plugins/featured-image-column
  * Description: Adds a column to the edit screen with the featured image if it exists.
- * Version: 1.1.0
+ * Version: 1.2.0
  * Author: Austin Passy
  * Author URI: httsp://austin.passy.co
  * Requires at least: 6.2
- * Tested up to: 6.7.1
+ * Tested up to: 7.1.0
  * Requires PHP: 8.0
  * @copyright 2009 - 2025
  * @author Austin Passy
