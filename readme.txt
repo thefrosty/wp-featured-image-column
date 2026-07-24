@@ -3,7 +3,7 @@ Contributors: austyfrosty, DH-Shredder, MartyThornley, chrisjean,
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=XQRHECLPQ46TE
 Tags: featured image, admin, column
 Requires at least: 6.2
-Tested up to: 6.7.1
+Tested up to: 7.1.0
 Stable tag: trunk
 Requires PHP: 8.0
 
@@ -62,9 +62,14 @@ Follow the steps below to install the plugin.
 
 == Changelog ==
 
+= Version 1.2.0 (2026/07/24) =
+
+* Tested upto WordPress 7.1.0.
+* Added width/height value to `get_the_post_thumbnail`.
+
 = Version 1.1.0 (2024/11/29) =
 
-* Tested up WordPress 6.7.1.
+* Tested upto WordPress 6.7.1.
 * Added GitHub Release -> WordPress.org Action.
 * Resolve 1.0.0 Release call_user_func errors and incorrect file path(s).
 
