@@ -74,7 +74,7 @@ class FeatureImageColumn
         $this->registerSettings();
 
         // Only continue if we're on the 'edit.php' page(s)
-        if (empty($pagenow) || $pagenow !== 'edit.php' && \defined('DOING_AJAX') && !\DOING_AJAX) {
+        if (empty($pagenow) || ($pagenow !== 'edit.php' && \defined('DOING_AJAX') && !\DOING_AJAX)) {
             return;
         }
 
