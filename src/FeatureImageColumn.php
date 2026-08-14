@@ -9,6 +9,7 @@ use function add_filter;
 use function add_options_page;
 use function apply_filters;
 use function array_map;
+use function defined;
 use function dirname;
 use function esc_attr;
 use function esc_html__;
@@ -19,6 +20,7 @@ use function get_post_types;
 use function get_the_post_thumbnail;
 use function get_the_title;
 use function has_post_thumbnail;
+use function is_array;
 use function plugin_dir_url;
 use function plugins_url;
 use function post_type_supports;
@@ -27,6 +29,7 @@ use function sprintf;
 use function update_option;
 use function wp_enqueue_style;
 use function wp_register_style;
+use const DOING_AJAX;
 
 /**
  * Class FeatureImageColumn
@@ -98,7 +101,7 @@ class FeatureImageColumn
         $this->registerSettings();
 
         // Only continue if we're on the 'edit.php' page(s)
-        if (empty($pagenow) || ($pagenow !== 'edit.php' && \defined('DOING_AJAX') && !\DOING_AJAX)) {
+        if (empty($pagenow) || ($pagenow !== 'edit.php' && defined('DOING_AJAX') && !DOING_AJAX)) {
             return;
         }
 
@@ -204,7 +207,7 @@ class FeatureImageColumn
             'featured_image_column_post_types',
             'featured_image_column',
             static function (mixed $input): array {
-                if (!\is_array($input)) {
+                if (!is_array($input)) {
                     $input = (array) $input;
                 }
 
@@ -232,7 +235,7 @@ class FeatureImageColumn
     }
 
     /**
-     * Helper function to return all public post ty`pes
+     * Helper function to return all public post types.
      * @return array
      */
     protected function getPostTypes(): array
