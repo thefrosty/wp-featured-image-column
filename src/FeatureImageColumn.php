@@ -221,11 +221,12 @@ class FeatureImageColumn
     protected function getTheImage(?int $post_id): string
     {
         if (has_post_thumbnail($post_id)) {
-            return get_the_post_thumbnail($post_id, [50, 50]);
+            $size = apply_filters('featured_image_post_thumbnail_size', [50, 50], $post_id);
+            return get_the_post_thumbnail($post_id, $size);
         }
 
         $default = plugins_url('images/default.png', $this->file);
-        $image = apply_filters('featured_image_column_default_image', $default);
+        $image = apply_filters('featured_image_column_default_image', $default, $post_id);
 
         return sprintf('<img alt="%1$s" src="%2$s">', esc_attr(get_the_title($post_id)), esc_url($image));
     }
