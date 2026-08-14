@@ -4,6 +4,30 @@ declare(strict_types=1);
 
 namespace TheFrosty;
 
+use function add_action;
+use function add_filter;
+use function add_options_page;
+use function apply_filters;
+use function array_map;
+use function dirname;
+use function esc_attr;
+use function esc_html__;
+use function esc_url;
+use function get_option;
+use function get_plugin_data;
+use function get_post_types;
+use function get_the_post_thumbnail;
+use function get_the_title;
+use function has_post_thumbnail;
+use function plugin_dir_url;
+use function plugins_url;
+use function post_type_supports;
+use function register_setting;
+use function sprintf;
+use function update_option;
+use function wp_enqueue_style;
+use function wp_register_style;
+
 /**
  * Class FeatureImageColumn
  * @package TheFrosty
@@ -27,9 +51,9 @@ class FeatureImageColumn
      */
     public function addHooks(): void
     {
-        \add_action('admin_menu', [$this, 'adminMenu']);
-        \add_action('admin_init', [$this, 'adminInit']);
-        \add_action('admin_enqueue_scripts', [$this, 'style']);
+        add_action('admin_menu', [$this, 'adminMenu']);
+        add_action('admin_init', [$this, 'adminInit']);
+        add_action('admin_enqueue_scripts', [$this, 'style']);
     }
 
     /**
@@ -39,12 +63,12 @@ class FeatureImageColumn
     {
         $post_types = [];
         foreach ($this->getPostTypes() as $post_type) {
-            if (!\post_type_supports($post_type, 'thumbnail')) {
+            if (!post_type_supports($post_type, 'thumbnail')) {
                 continue;
             }
             $post_types[$post_type] = $post_type;
         }
-        \update_option('featured_image_column', $post_types);
+        update_option('featured_image_column', $post_types);
     }
 
     /**
@@ -52,7 +76,7 @@ class FeatureImageColumn
      */
     public function adminMenu(): void
     {
-        \add_options_page(
+        add_options_page(
             'Featured Image Column Settings',
             'Featured Image Col',
             'manage_options',
@@ -86,11 +110,11 @@ class FeatureImageColumn
 
         // Add out custom column and column data
         foreach ($post_types as $post_type) {
-            if (!\post_type_supports($post_type, 'thumbnail')) {
+            if (!post_type_supports($post_type, 'thumbnail')) {
                 continue;
             }
-            \add_filter("manage_{$post_type}_posts_columns", [$this, 'columns']);
-            \add_action("manage_{$post_type}_posts_custom_column", [$this, 'columnData'], 10, 2);
+            add_filter("manage_{$post_type}_posts_columns", [$this, 'columns']);
+            add_action("manage_{$post_type}_posts_custom_column", [$this, 'columnData'], 10, 2);
         }
     }
 
@@ -100,11 +124,11 @@ class FeatureImageColumn
     public function style(): void
     {
         global $pagenow;
-        $version = \get_plugin_data($this->file, false, false)['Version'] ?? '20170625';
-        \wp_register_style('featured-image-column', \plugin_dir_url($this->file) . 'css/column.css', [], $version);
+        $version = get_plugin_data($this->file, false, false)['Version'] ?? '20170625';
+        wp_register_style('featured-image-column', plugin_dir_url($this->file) . 'css/column.css', [], $version);
 
         if ($pagenow === 'edit.php') {
-            \wp_enqueue_style('featured-image-column');
+            wp_enqueue_style('featured-image-column');
         }
     }
 
@@ -119,7 +143,7 @@ class FeatureImageColumn
         foreach ($columns as $key => $title) {
             // Put the Thumbnail column before the Title column
             if ($key === 'title') {
-                $new_columns[self::ID] = \esc_html__('Image', 'featured-image-column');
+                $new_columns[self::ID] = esc_html__('Image', 'featured-image-column');
             }
 
             $new_columns[$key] = $title;
@@ -161,14 +185,14 @@ class FeatureImageColumn
         if (empty($post_types)) {
             $post_types = [];
             foreach ($this->getPostTypes() as $key => $post_type) {
-                if (\post_type_supports($post_type, 'thumbnail')) {
+                if (post_type_supports($post_type, 'thumbnail')) {
                     $post_types[$post_type] = $post_type;
                 }
             }
-            \update_option('featured_image_column', $post_types);
+            update_option('featured_image_column', $post_types);
         }
 
-        include \dirname($this->file) . '/views/settings.php';
+        include dirname($this->file) . '/views/settings.php';
     }
 
     /**
@@ -176,7 +200,7 @@ class FeatureImageColumn
      */
     protected function registerSettings(): void
     {
-        \register_setting(
+        register_setting(
             'featured_image_column_post_types',
             'featured_image_column',
             static function (mixed $input): array {
@@ -184,7 +208,7 @@ class FeatureImageColumn
                     $input = (array) $input;
                 }
 
-                return \array_map('sanitize_key', $input);
+                return array_map('sanitize_key', $input);
             }
         );
     }
@@ -196,14 +220,15 @@ class FeatureImageColumn
      */
     protected function getTheImage(?int $post_id): string
     {
-        if (\has_post_thumbnail($post_id)) {
-            return \get_the_post_thumbnail($post_id, [50, 50]);
+        if (has_post_thumbnail($post_id)) {
+            $size = apply_filters('featured_image_post_thumbnail_size', [50, 50], $post_id);
+            return get_the_post_thumbnail($post_id, $size);
         }
 
-        $default = \plugins_url('images/default.png', $this->file);
-        $image = \apply_filters('featured_image_column_default_image', $default);
+        $default = plugins_url('images/default.png', $this->file);
+        $image = apply_filters('featured_image_column_default_image', $default, $post_id);
 
-        return \sprintf('<img alt="%1$s" src="%2$s">', \esc_attr(\get_the_title($post_id)), \esc_url($image));
+        return sprintf('<img alt="%1$s" src="%2$s">', esc_attr(get_the_title($post_id)), esc_url($image));
     }
 
     /**
@@ -212,7 +237,7 @@ class FeatureImageColumn
      */
     protected function getPostTypes(): array
     {
-        return \get_post_types(['public' => true]);
+        return get_post_types(['public' => true]);
     }
 
     /**
@@ -221,6 +246,6 @@ class FeatureImageColumn
      */
     protected function getSettings(): array
     {
-        return \get_option('featured_image_column', []);
+        return get_option('featured_image_column', []);
     }
 }
